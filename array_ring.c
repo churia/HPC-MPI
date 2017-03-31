@@ -39,7 +39,7 @@ int main( int argc, char *argv[])
   timestamp_type time1, time2;
   get_timestamp(&time1);
 
-  for(n = 0; n < N; ++n){
+  for(n = 1; n <= N; ++n){
     if(rank != 0)
       origin = rank - 1;
     else
@@ -52,8 +52,9 @@ int main( int argc, char *argv[])
      * Wait for incomming message
      */
     MPI_Wait(&request_in, &status);
-
-    printf("Iter %d: rank %d/%d hosted on %s received from %d\n",n, rank,size,hostname,origin);
+    
+    if(n % 10 == 0)
+    	printf("Iter %d/%d: rank %d/%d hosted on %s received from %d\n", n,N, rank,size,hostname,origin);
     /*
      * Wait for outgoing message
      */
@@ -67,6 +68,9 @@ int main( int argc, char *argv[])
     printf("Latency: %f comm/sec\n", elapsed/N/size);
     printf("Bandwidth: %f MB/s\n", N*size*M*sizeof(long double)/1e6/elapsed);
   }
+
+  free(message_in);
+  free(message_out);
   MPI_Finalize();
   return 0;
 }
