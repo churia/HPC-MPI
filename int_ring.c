@@ -34,7 +34,7 @@ int main( int argc, char *argv[])
     if(rank !=0){
       origin = rank -1;
       MPI_Recv(&message,  1, MPI_INT, origin,      tag, MPI_COMM_WORLD, &status);
-      printf("rank %d/%d hosted on %s received from %d the message %d\n", rank,size, hostname, origin, message);
+//      printf("rank %d/%d hosted on %s received from %d the message %d\n", rank,size, hostname, origin, message);
     }	
     message += rank;
     MPI_Send(&message, 1, MPI_INT, (rank+1)%size, tag, MPI_COMM_WORLD);
@@ -49,10 +49,9 @@ int main( int argc, char *argv[])
   
   get_timestamp(&time2);
   double elapsed = timestamp_diff_in_seconds(time1,time2);
-  if (mpirank == 0) {
+  if (rank == 0) {
     printf("Time elapsed is %f seconds.\n", elapsed);
-    printf("%f communication/sec", elapsed/N/size);
-    printf("%f GB/s\n", N*size*sizeof(int)/elapsed);
+    printf("Latency: %f comm/sec\n", elapsed/N/size);
   }
   MPI_Finalize();
   return 0;
