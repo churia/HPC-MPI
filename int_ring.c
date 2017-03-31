@@ -1,11 +1,12 @@
-/* Communication ping-pong:
- * Exchange between messages between mpirank
- * 0 <-> 1, 2 <-> 3, ....
+/* Communication ring:
+ * pass a int message in a ring
+ * 0 -> 1 -> 2 -> 3 -> .... -> 0
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <mpi.h>
+#include "util.h"
 
 int main( int argc, char *argv[])
 {
@@ -26,6 +27,9 @@ int main( int argc, char *argv[])
     N=atoi(argv[1]);
   }
 
+  timestamp_type time1, time2;
+  get_timestamp(&time1);
+
   for(i=0;i<N;i++){
     if(rank !=0){
       origin = rank -1;
@@ -42,7 +46,14 @@ int main( int argc, char *argv[])
       printf("rank %d/%d hosted on %s received from %d the message %d\n", rank,size, hostname, origin, message);
     }
   }
-
+  
+  get_timestamp(&time2);
+  double elapsed = timestamp_diff_in_seconds(time1,time2);
+  if (mpirank == 0) {
+    printf("Time elapsed is %f seconds.\n", elapsed);
+    printf("%f communication/sec", elapsed/N/size);
+    printf("%f GB/s\n", N*size*sizeof(int)/elapsed);
+  }
   MPI_Finalize();
   return 0;
 }
