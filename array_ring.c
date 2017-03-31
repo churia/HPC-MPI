@@ -75,20 +75,27 @@ int main( int argc, char *argv[])
    * Wait for incomming message
    */
   MPI_Wait(&request_in, &status);
-  /*
-   * Do work
+  
+/*
+   * Write output to a file
    */
   {
-    int i;
-    double x = 0;
+    FILE* fd = NULL;
+    char filename[256];
+    snprintf(filename, 256, "output%02d.txt", rank);
+    fd = fopen(filename,"w+");
 
-    for(i = 0; i < 100000; ++i)
+    if(NULL == fd)
     {
-      int sign = (i%2) ? -1 : 1;
-      x += sign * 1.0/(2*i+1);
+      printf("Error opening file \n");
+      return 1;
     }
 
-    //printf("%d: %25.16g\n", rank, 4*x);
+    fprintf(fd, "rank %d received from %d the message:\n", rank, origin);
+    for(n = 0; n < N; ++n)
+      fprintf(fd, "  %d\n", message_in[n]);
+
+    fclose(fd);
   }
 
   /*
