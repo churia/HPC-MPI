@@ -12,4 +12,3 @@ array_ring: array_ring.c
 
 clean:
 	rm -f ${EXECS}
-	rm -rf *.txt
