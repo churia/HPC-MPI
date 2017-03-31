@@ -41,15 +41,16 @@ int main( int argc, char *argv[])
   for(i = 0; i < N; i++){
     if(rank !=0){
       origin = rank -1;
-      MPI_Irecv(&message,  M, MPI_DOUBLE, origin,      tag, MPI_COMM_WORLD, &status);
+      MPI_Irecv(&message,  M, MPI_DOUBLE, origin,      tag, MPI_COMM_WORLD, &request_in);
       printf("rank %d/%d hosted on %s received array from %d \n", rank,size, hostname, origin);
-    }	
-    MPI_Isend(&message, M, MPI_DOUBLE, (rank+1)%size, tag, MPI_COMM_WORLD);
+    }
+	
+    MPI_Isend(&message, M, MPI_DOUBLE, (rank+1)%size, tag, MPI_COMM_WORLD, &request_out);
   
     if(rank == 0)
     {
       origin = size - 1;
-      MPI_Irecv(&message,  M, MPI_DOUBLE, origin,      tag, MPI_COMM_WORLD, &status);
+      MPI_Irecv(&message,  M, MPI_DOUBLE, origin,      tag, MPI_COMM_WORLD, &request_in);
       printf("rank %d/%d hosted on %s received array from %d \n", rank,size, hostname, origin);
     }
   }
@@ -67,7 +68,7 @@ int main( int argc, char *argv[])
       x += sign * 1.0/(2*i+1);
     }
 
-    printf("%d: %25.16g\n", rank, 4*x);
+    //printf("%d: %25.16g\n", rank, 4*x);
   }
 
   /*
@@ -87,7 +88,7 @@ int main( int argc, char *argv[])
       x += sign * 1.0/(2*i+1);
     }
 
-    printf("%d: %25.16g\n", rank, 4*x);
+    //printf("%d: %25.16g\n", rank, 4*x);
   }
 
   /*
